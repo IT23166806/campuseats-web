@@ -6,6 +6,7 @@ import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
+  const API = import.meta.env.VITE_API_URL
 
   return (
     <>
@@ -16,10 +17,9 @@ function App() {
           <img src={viteLogo} className="vite" alt="Vite logo" />
         </div>
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+          <h1>CampusEats</h1>
+          <p>React Frontend Application</p>
+          <p>API Base URL: {API || 'Not configured'}</p>
         </div>
         <button
           type="button"
