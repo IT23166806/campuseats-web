@@ -7,6 +7,7 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "https://campuseats-web-umber.vercel.app",
+                "https://campuseats-9uptti963-it23166806.vercel.app",
                 "http://localhost:5173",
                 "http://127.0.0.1:5173"
               )
