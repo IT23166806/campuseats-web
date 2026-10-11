@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 
-const API_URL = 'https://campuseatsweb-zofmil9s.b4a.run'
+const API_URL = 'https://campuseatsweb3-h4zgzk0c.b4a.run'
 
 function App() {
   const [menu, setMenu] = useState([])
