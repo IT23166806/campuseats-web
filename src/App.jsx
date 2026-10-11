@@ -1,121 +1,76 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+
+import { useEffect, useState } from 'react'
 import './App.css'
 
+const API_URL = import.meta.env.VITE_API_URL
+
 function App() {
-  const [count, setCount] = useState(0)
-  const API = import.meta.env.VITE_API_URL
+  const [menu, setMenu] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    async function loadMenu() {
+      try {
+        if (!API_URL) {
+          throw new Error('VITE_API_URL is not configured')
+        }
+
+        const response = await fetch(`${API_URL}/api/menu`)
+
+        if (!response.ok) {
+          throw new Error(`API returned status ${response.status}`)
+        }
+
+        const data = await response.json()
+        setMenu(data)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadMenu()
+  }, [])
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>CampusEats</h1>
-          <p>React Frontend Application</p>
-          <p>API Base URL: {API || 'Not configured'}</p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="campuseats">
+      <header className="header">
+        <h1>CampusEats</h1>
+        <p>Fresh and delicious campus meals</p>
+      </header>
 
-      <div className="ticks"></div>
+      <main className="content">
+        <h2>Our Menu</h2>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {loading && <p>Loading menu...</p>}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+        {error && (
+          <p className="error">
+            Unable to load menu: {error}
+          </p>
+        )}
+
+        {!loading && !error && menu.length === 0 && (
+          <p>No menu items available.</p>
+        )}
+
+        <div className="menu-grid">
+          {menu.map((item) => (
+            <div className="menu-card" key={item.id}>
+              <h3>{item.name}</h3>
+              <p className="price">Rs. {item.price}</p>
+              <span>Available on Campus</span>
+            </div>
+          ))}
+        </div>
+      </main>
+
+      <footer>
+        CampusEats © 2026
+      </footer>
+    </div>
   )
 }
 
