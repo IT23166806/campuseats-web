@@ -1,3 +1,4 @@
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,42 @@ app.MapGet("/api/menu", () =>
     };
 
     return Results.Ok(menu);
+});
+
+app.MapGet("/api/db-status", async (IConfiguration config) =>
+{
+    try
+    {
+        var connectionString =
+            config.GetConnectionString("Default");
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            return Results.Problem(
+                "Database connection is not configured.");
+        }
+
+        await using var connection =
+            new NpgsqlConnection(connectionString);
+
+        await connection.OpenAsync();
+
+        await using var command =
+            new NpgsqlCommand("SELECT 1", connection);
+
+        await command.ExecuteScalarAsync();
+
+        return Results.Ok(new
+        {
+            status = "Connected",
+            database = "Neon PostgreSQL"
+        });
+    }
+    catch
+    {
+        return Results.Problem(
+            "Database connection failed.");
+    }
 });
 
 app.Run();
